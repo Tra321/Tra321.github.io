@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getPosts } from '../../lib/posts';
+const posts = await getPosts();
+---
+
+<BaseLayout title="文章" description="Atra 的全部技术文章与笔记">
+  <header class="page-head shell">
+    <span class="eyebrow">ALL POSTS</span>
+    <h1>全部文章</h1>
+    <p>共 {posts.length} 篇，按发布时间倒序排列。</p>
+  </header>
+  <section class="section shell post-grid">
+    {posts.map((post) => <PostCard post={post} />)}
+  </section>
+</BaseLayout>

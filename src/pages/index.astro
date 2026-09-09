@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import { getPosts } from '../lib/posts';
+
+const posts = await getPosts();
+const tags = [...new Set(posts.flatMap((post) => post.data.tags))];
+---
+
+<BaseLayout>
+  <section class="hero shell">
+    <div class="hero-copy">
+      <span class="eyebrow">HELLO, I'M ATRA</span>
+      <h1>在代码与生活之间，<br /><em>持续记录。</em></h1>
+      <p>这里收集我的开发笔记、实践经验，以及一路上值得留下的想法。</p>
+      <div class="hero-actions">
+        <a class="button primary" href="/blog/">浏览文章</a>
+        <a class="button" href="https://github.com/Tra321" target="_blank" rel="noreferrer">访问 GitHub</a>
+      </div>
+    </div>
+    <div class="hero-card" aria-label="站点统计">
+      <span>NOTES / PROJECTS / LIFE</span>
+      <strong>{String(posts.length).padStart(2, '0')}</strong>
+      <p>篇公开文章</p>
+      <div class="hero-stats">
+        <span><b>{tags.length}</b> 个标签</span>
+        <span><b>2025</b> 开始记录</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section shell">
+    <div class="section-heading">
+      <div><span class="eyebrow">LATEST WRITING</span><h2>最近文章</h2></div>
+      <a href="/blog/">查看全部 →</a>
+    </div>
+    <div class="post-grid">
+      {posts.slice(0, 6).map((post) => <PostCard post={post} />)}
+    </div>
+  </section>
+</BaseLayout>

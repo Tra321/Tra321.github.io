@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPosts } from '../../lib/posts';
+const posts = await getPosts();
+const categories = Object.entries(Object.groupBy(posts, (post) => post.data.category))
+  .map(([name, values]) => ({ name, count: values?.length ?? 0 }))
+  .sort((a, b) => b.count - a.count);
+---
+
+<BaseLayout title="分类" description="按分类浏览文章">
+  <header class="page-head shell"><span class="eyebrow">CATEGORIES</span><h1>文章分类</h1></header>
+  <section class="section shell tag-cloud">
+    {categories.map((item) => <a href={`/categories/${encodeURIComponent(item.name)}/`}><span>{item.name}</span><b>{item.count}</b></a>)}
+  </section>
+</BaseLayout>

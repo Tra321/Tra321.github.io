@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { formatDate, getPosts, postPath } from '../../lib/posts';
+const posts = await getPosts();
+const groups = Map.groupBy(posts, (post) => post.data.pubDate.getFullYear());
+---
+
+<BaseLayout title="归档" description="按年份浏览 Atra 的文章">
+  <header class="page-head shell"><span class="eyebrow">ARCHIVE</span><h1>文章归档</h1></header>
+  <section class="section shell archive">
+    {[...groups].map(([year, yearPosts]) => (
+      <div class="archive-year">
+        <h2>{year}</h2>
+        <div>
+          {yearPosts.map((post) => (
+            <a class="archive-row" href={postPath(post)}>
+              <time>{formatDate(post.data.pubDate)}</time><span>{post.data.title}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    ))}
+  </section>
+</BaseLayout>

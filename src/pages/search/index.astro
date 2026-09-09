@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="搜索" description="搜索 Atra 的全部文章">
+  <header class="page-head shell">
+    <span class="eyebrow">SEARCH</span>
+    <h1>搜索文章</h1>
+    <p>输入标题、技术名称或正文关键词。</p>
+  </header>
+  <section class="search-box shell">
+    <label for="search-input">搜索关键词</label>
+    <input id="search-input" type="search" placeholder="例如：Docker、Python、GitHub" autocomplete="off" autofocus />
+    <p id="search-status" aria-live="polite">正在载入搜索索引…</p>
+    <div id="search-results"></div>
+  </section>
+  <script>
+    const input = document.querySelector<HTMLInputElement>('#search-input');
+    const status = document.querySelector<HTMLParagraphElement>('#search-status');
+    const container = document.querySelector<HTMLDivElement>('#search-results');
+    let pagefind: any;
+
+    try {
+      const pagefindPath = '/pagefind/pagefind.js';
+      pagefind = await import(/* @vite-ignore */ pagefindPath);
+      await pagefind.init();
+      if (status) status.textContent = '搜索索引已就绪';
+    } catch {
+      if (status) status.textContent = '本地开发模式下搜索不可用，请先运行 npm run build';
+    }
+
+    input?.addEventListener('input', async () => {
+      const query = input.value.trim();
+      if (!container || !status || !pagefind || !query) {
+        if (container) container.replaceChildren();
+        if (status && pagefind) status.textContent = query ? '没有搜索结果' : '搜索索引已就绪';
+        return;
+      }
+      const search = await pagefind.search(query);
+      const results = await Promise.all(search.results.slice(0, 20).map((result: any) => result.data()));
+      status.textContent = `找到 ${search.results.length} 条结果`;
+      container.replaceChildren(...results.map((result: any) => {
+        const article = document.createElement('article');
+        article.className = 'search-result';
+        const link = document.createElement('a');
+        link.href = result.url;
+        const title = document.createElement('h2');
+        title.textContent = result.meta.title;
+        const excerpt = document.createElement('p');
+        excerpt.innerHTML = result.excerpt;
+        link.append(title, excerpt);
+        article.append(link);
+        return article;
+      }));
+    });
+  </script>
+</BaseLayout>

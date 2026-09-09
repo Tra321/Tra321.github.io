@@ -1,0 +1,23 @@
+---
+import type { Post } from '../lib/posts';
+import { formatDate, postPath, readingMinutes } from '../lib/posts';
+
+interface Props { post: Post }
+const { post } = Astro.props;
+---
+
+<article class="post-card">
+  <div class="post-card-meta">
+    <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+    <span>{post.data.category}</span>
+    <span>{readingMinutes(post.body)} 分钟阅读</span>
+  </div>
+  <h2><a href={postPath(post)}>{post.data.title}</a></h2>
+  <p>{post.data.description}</p>
+  <div class="post-card-foot">
+    <div class="tag-list">
+      {post.data.tags.map((tag) => <a href={`/tags/${encodeURIComponent(tag)}/`}>#{tag}</a>)}
+    </div>
+    <a class="read-more" href={postPath(post)}>阅读全文 →</a>
+  </div>
+</article>
